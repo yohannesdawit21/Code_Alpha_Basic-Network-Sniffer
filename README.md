@@ -48,6 +48,43 @@ Alternative (safer than sudo for daily use):
 sudo setcap cap_net_raw,cap_net_admin=eip .venv/bin/python
 ```
 
+### Deployment checklist
+
+1. Set production environment variables:
+
+```bash
+export DEBUG=False
+export SECRET_KEY='replace-with-a-long-random-secret-key'
+export ALLOWED_HOSTS='your-domain.com,127.0.0.1'
+```
+
+2. (Optional but recommended behind HTTPS proxy) keep secure defaults:
+
+```bash
+export SECURE_SSL_REDIRECT=True
+export SECURE_HSTS_SECONDS=31536000
+```
+
+3. Run Django deploy checks:
+
+```bash
+.venv/bin/python manage.py check --deploy
+```
+
+4. Collect static files:
+
+```bash
+.venv/bin/python manage.py collectstatic --noinput
+```
+
+5. Start service (example):
+
+```bash
+sudo .venv/bin/python manage.py runserver 0.0.0.0:8000
+```
+
+For real internet deployment, use a production server stack (Gunicorn + Nginx) instead of Django runserver.
+
 ### How to use the website (step by step)
 
 1. Start the server:
