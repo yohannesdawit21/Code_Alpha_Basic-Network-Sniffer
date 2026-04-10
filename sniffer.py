@@ -6,7 +6,7 @@ from __future__ import annotations
 import argparse
 from datetime import datetime
 
-from scapy.all import IP, TCP, UDP, Raw, sniff  # type: ignore
+from scapy.all import IP, TCP, UDP, Raw, get_if_list, sniff  # type: ignore
 
 
 def parse_args() -> argparse.Namespace:
@@ -30,6 +30,11 @@ def build_filter(host: str | None, proto: str | None) -> str | None:
     if proto:
         filters.append(proto)
     return " and ".join(filters) if filters else None
+
+
+def list_interfaces() -> list[str]:
+    interfaces = sorted({iface for iface in get_if_list() if iface})
+    return sorted(interfaces, key=lambda name: (name == "lo", name))
 
 
 def safe_payload(packet) -> str:

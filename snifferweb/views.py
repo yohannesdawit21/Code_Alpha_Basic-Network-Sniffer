@@ -3,13 +3,14 @@ from __future__ import annotations
 from django.shortcuts import render
 
 from .forms import CaptureForm
-from sniffer import collect_packets
+from sniffer import collect_packets, list_interfaces
 
 
 def index(request):
     packets = []
     error = ""
     info = ""
+    interfaces = list_interfaces()
 
     if request.method == "POST":
         form = CaptureForm(request.POST)
@@ -47,5 +48,6 @@ def index(request):
             "packets": packets,
             "error": error,
             "info": info,
+            "interfaces": interfaces,
         },
     )

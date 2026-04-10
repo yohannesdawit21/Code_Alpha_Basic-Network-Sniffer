@@ -108,8 +108,9 @@ http://127.0.0.1:8000/
 3. Fill the capture form:
 
 - Network Interface:
-	- Leave blank to use default interface, or enter active one like `wlan0`, `eth0`, `enp3s0`.
-	- To find yours: `ip -br a` and choose interface that is `UP`.
+	- The website now auto-detects your interfaces and suggests them in a dropdown.
+	- You can leave it blank to use the default interface, or pick one like `wlan0`, `eth0`, or `enp3s0`.
+	- To confirm yours manually: run `ip -br a` and choose the interface that is `UP`.
 - Packet Count:
 	- Number of packets to capture (try `50` for testing).
 - Host Filter:

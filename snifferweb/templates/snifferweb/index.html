@@ -145,9 +145,22 @@
           {% for field in form %}
             <div>
               <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-              {{ field }}
+              {% if field.name == "iface" %}
+                {{ field }}
+                <datalist id="iface-options">
+                  <option value="">Auto-detect / default</option>
+                  {% for iface in interfaces %}
+                    <option value="{{ iface }}">{{ iface }}</option>
+                  {% endfor %}
+                </datalist>
+              {% else %}
+                {{ field }}
+              {% endif %}
               {% if field.errors %}
                 <div class="error">{{ field.errors|striptags }}</div>
+              {% endif %}
+              {% if field.help_text %}
+                <div class="hint">{{ field.help_text }}</div>
               {% endif %}
             </div>
           {% endfor %}
@@ -158,7 +171,7 @@
       </form>
       {% if error %}<div class="error">{{ error }}</div>{% endif %}
       {% if info %}<div class="info">{{ info }}</div>{% endif %}
-      <p class="hint">Tip: capturing packets usually requires elevated privileges.</p>
+      <p class="hint">Tip: capturing packets usually requires elevated privileges. The interface field now suggests detected adapters automatically.</p>
     </section>
 
     <section class="panel">
