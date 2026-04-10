@@ -40,9 +40,9 @@ def safe_payload(packet) -> str:
     return preview.decode("utf-8", errors="replace").replace("\n", "\\n")
 
 
-def packet_handler(packet) -> None:
+def summarize_packet(packet):
     if IP not in packet:
-        return
+        return None
 
     timestamp = datetime.now().strftime("%H:%M:%S")
     ip_layer = packet[IP]
@@ -66,12 +66,49 @@ def packet_handler(packet) -> None:
     elif proto == 1:
         proto_name = "ICMP"
 
-    payload_preview = safe_payload(packet)
+    return {
+        "timestamp": timestamp,
+        "protocol": proto_name,
+        "src_ip": src_ip,
+        "dst_ip": dst_ip,
+        "src_port": src_port,
+        "dst_port": dst_port,
+        "length": length,
+        "payload": safe_payload(packet),
+    }
+
+
+def collect_packets(
+    iface: str | None,
+    count: int,
+    host: str | None,
+    proto: str | None,
+    timeout: int | None = None,
+):
+    packets = sniff(
+        iface=iface,
+        filter=build_filter(host, proto),
+        count=count,
+        timeout=timeout,
+        store=True,
+    )
+    results = []
+    for packet in packets:
+        summary = summarize_packet(packet)
+        if summary:
+            results.append(summary)
+    return results
+
+
+def packet_handler(packet) -> None:
+    summary = summarize_packet(packet)
+    if not summary:
+        return
 
     print(
-        f"[{timestamp}] {proto_name:<4} "
-        f"{src_ip}:{src_port} -> {dst_ip}:{dst_port} "
-        f"len={length} payload='{payload_preview}'"
+        f"[{summary['timestamp']}] {summary['protocol']:<4} "
+        f"{summary['src_ip']}:{summary['src_port']} -> {summary['dst_ip']}:{summary['dst_port']} "
+        f"len={summary['length']} payload='{summary['payload']}'"
     )
 
 

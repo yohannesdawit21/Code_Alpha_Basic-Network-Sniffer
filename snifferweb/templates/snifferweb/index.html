@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Network Sniffer UI</title>
+  <style>
+    :root {
+      --bg: #f2f5f9;
+      --panel: #ffffff;
+      --ink: #112133;
+      --accent: #0f766e;
+      --accent-2: #f59e0b;
+      --line: #d6dde6;
+      --danger: #b42318;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--ink);
+      background: radial-gradient(circle at top right, #dbeafe 0%, var(--bg) 45%, #eafbf7 100%);
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .hero {
+      background: linear-gradient(120deg, #0f172a 0%, #134e4a 100%);
+      color: #fff;
+      border-radius: 18px;
+      padding: 1.2rem 1.4rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    .hero p {
+      margin: 0.45rem 0 0;
+      opacity: 0.92;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1rem;
+      box-shadow: 0 10px 24px rgba(17, 33, 51, 0.06);
+      margin-bottom: 1rem;
+    }
+    .grid {
+      display: grid;
+      gap: 0.75rem;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    label { display: block; font-weight: 600; margin-bottom: 0.25rem; }
+    input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.55rem 0.6rem;
+      font-size: 0.95rem;
+      background: #fff;
+    }
+    .actions { margin-top: 0.9rem; }
+    button {
+      background: linear-gradient(120deg, var(--accent), #0ea5a2);
+      color: white;
+      border: none;
+      padding: 0.65rem 1rem;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .error {
+      margin-top: 0.75rem;
+      color: var(--danger);
+      font-weight: 600;
+    }
+    .summary {
+      margin: 0.3rem 0 0.8rem;
+      font-weight: 600;
+      color: #334155;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #fff;
+    }
+    th, td {
+      text-align: left;
+      border-bottom: 1px solid #ebeff5;
+      padding: 0.55rem 0.6rem;
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+    th {
+      background: #f8fafc;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      color: #475569;
+    }
+    .pill {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: #ecfeff;
+      color: #155e75;
+      font-weight: 700;
+      border: 1px solid #bae6fd;
+    }
+    .payload {
+      max-width: 360px;
+      overflow-wrap: anywhere;
+      color: #0f172a;
+    }
+    .hint {
+      margin-top: 0.55rem;
+      color: #475569;
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Basic Network Sniffer</h1>
+      <p>Capture selected packets and inspect source, destination, protocol, and payload previews.</p>
+    </section>
+
+    <section class="panel">
+      <form method="post">
+        {% csrf_token %}
+        <div class="grid">
+          {% for field in form %}
+            <div>
+              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% if field.errors %}
+                <div class="error">{{ field.errors|striptags }}</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="actions">
+          <button type="submit">Start Capture</button>
+        </div>
+      </form>
+      {% if error %}<div class="error">{{ error }}</div>{% endif %}
+      <p class="hint">Tip: capturing packets usually requires elevated privileges.</p>
+    </section>
+
+    <section class="panel">
+      <p class="summary">Captured packets: {{ packets|length }}</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Protocol</th>
+            <th>Source</th>
+            <th>Destination</th>
+            <th>Length</th>
+            <th>Payload Preview</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pkt in packets %}
+            <tr>
+              <td>{{ pkt.timestamp }}</td>
+              <td><span class="pill">{{ pkt.protocol }}</span></td>
+              <td>{{ pkt.src_ip }}:{{ pkt.src_port }}</td>
+              <td>{{ pkt.dst_ip }}:{{ pkt.dst_port }}</td>
+              <td>{{ pkt.length }}</td>
+              <td class="payload">{{ pkt.payload }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6">No packets captured yet. Submit the form to run a capture.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </div>
+</body>
+</html>
