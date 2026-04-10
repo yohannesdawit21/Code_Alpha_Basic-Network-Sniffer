@@ -9,6 +9,7 @@ from sniffer import collect_packets
 def index(request):
     packets = []
     error = ""
+    info = ""
 
     if request.method == "POST":
         form = CaptureForm(request.POST)
@@ -26,6 +27,11 @@ def index(request):
                     proto=proto,
                     timeout=timeout,
                 )
+                if not packets:
+                    info = (
+                        "No packets captured. Try leaving interface blank, increase count/timeout, "
+                        "and generate traffic (for example, ping a host)."
+                    )
             except PermissionError:
                 error = "Permission denied. Run Django with sudo or assign packet capture capabilities to Python."
             except Exception as exc:  # Broad catch to keep UI friendly.
@@ -40,5 +46,6 @@ def index(request):
             "form": form,
             "packets": packets,
             "error": error,
+            "info": info,
         },
     )

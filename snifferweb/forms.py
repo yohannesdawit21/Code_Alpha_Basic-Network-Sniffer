@@ -2,7 +2,12 @@ from django import forms
 
 
 class CaptureForm(forms.Form):
-    iface = forms.CharField(required=False, label="Network Interface", initial="eth0")
+    iface = forms.CharField(
+        required=False,
+        label="Network Interface",
+        initial="",
+        help_text="Leave blank to use the system default interface.",
+    )
     count = forms.IntegerField(min_value=1, max_value=200, initial=20, label="Packet Count")
     host = forms.CharField(required=False, label="Host Filter")
     proto = forms.ChoiceField(

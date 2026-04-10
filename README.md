@@ -48,6 +48,77 @@ Alternative (safer than sudo for daily use):
 sudo setcap cap_net_raw,cap_net_admin=eip .venv/bin/python
 ```
 
+### How to use the website (step by step)
+
+1. Start the server:
+
+```bash
+python manage.py runserver
+```
+
+If you get packet permission errors, use:
+
+```bash
+sudo .venv/bin/python manage.py runserver
+```
+
+2. Open the UI in your browser:
+
+```text
+http://127.0.0.1:8000/
+```
+
+3. Fill the capture form:
+
+- Network Interface:
+	- Leave blank to use default interface, or enter active one like `wlan0`, `eth0`, `enp3s0`.
+	- To find yours: `ip -br a` and choose interface that is `UP`.
+- Packet Count:
+	- Number of packets to capture (try `50` for testing).
+- Host Filter:
+	- Optional. Enter one IP or hostname, such as `8.8.8.8` or `google.com`.
+- Protocol:
+	- Choose `Any`, `TCP`, `UDP`, or `ICMP`.
+- Timeout (seconds):
+	- Maximum wait time for packets (try `10` to `20`).
+
+4. Click **Start Capture**.
+
+5. While capture runs, generate traffic in another terminal:
+
+```bash
+ping 8.8.8.8
+```
+
+6. Read results in the table:
+
+- Time
+- Protocol
+- Source
+- Destination
+- Length
+- Payload Preview
+
+### Quick test profile
+
+Use these values for a reliable first test:
+
+- Network Interface: blank (or your active interface)
+- Packet Count: `50`
+- Host Filter: blank
+- Protocol: `ICMP`
+- Timeout: `15`
+
+Then run `ping 8.8.8.8` in another terminal and capture again.
+
+### If no packets are captured
+
+- Ensure server was started with proper permissions.
+- Try a specific interface from `ip -br a`.
+- Remove Host Filter to avoid over-filtering.
+- Increase Packet Count and Timeout.
+- Generate traffic during capture (ping/curl/browser activity).
+
 Optional filters:
 
 ```bash

@@ -124,6 +124,11 @@
       color: #475569;
       font-size: 0.88rem;
     }
+    .info {
+      margin-top: 0.75rem;
+      color: #155e75;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -152,6 +157,7 @@
         </div>
       </form>
       {% if error %}<div class="error">{{ error }}</div>{% endif %}
+      {% if info %}<div class="info">{{ info }}</div>{% endif %}
       <p class="hint">Tip: capturing packets usually requires elevated privileges.</p>
     </section>
 
